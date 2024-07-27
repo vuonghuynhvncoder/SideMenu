@@ -65,7 +65,10 @@ internal final class SideMenuPushCoordinator: Coordinator {
             return false
         }
 
+        #if os(tvOS)
+        #else
         toViewController.navigationItem.hidesBackButton = config.pushStyle.hidesBackButton
+        #endif
 
         switch config.pushStyle {
 

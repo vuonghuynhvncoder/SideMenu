@@ -146,11 +146,13 @@ internal final class SideMenuPresentationController {
 
         addParallax(to: presentingViewController.view)
         
+        #if os(tvOS)
+        #else
         if let topNavigationController = presentingViewController as? UINavigationController {
             interactivePopGestureRecognizerEnabled = interactivePopGestureRecognizerEnabled ?? topNavigationController.interactivePopGestureRecognizer?.isEnabled
             topNavigationController.interactivePopGestureRecognizer?.isEnabled = false
         }
-
+        #endif
         containerViewWillLayoutSubviews()
         config.presentationStyle.presentationTransitionDidEnd(to: presentedViewController, from: presentingViewController, completed)
     }
@@ -199,10 +201,13 @@ internal final class SideMenuPresentationController {
         statusBarView?.removeFromSuperview()
         removeStyles(from: presentingViewController.containerViewController.view)
         
+        #if os(tvOS)
+        #else
         if let interactivePopGestureRecognizerEnabled = interactivePopGestureRecognizerEnabled,
             let topNavigationController = presentingViewController as? UINavigationController {
             topNavigationController.interactivePopGestureRecognizer?.isEnabled = interactivePopGestureRecognizerEnabled
         }
+        #endif
 
         presentingViewController.view.isUserInteractionEnabled = true
         config.presentationStyle.dismissalTransitionDidEnd(to: presentedViewController, from: presentingViewController, completed)
@@ -212,11 +217,15 @@ internal final class SideMenuPresentationController {
 private extension SideMenuPresentationController {
 
     var statusBarFrame: CGRect {
+        #if os(tvOS)
+        return CGRect.zero
+        #else
         if #available(iOS 13.0, *) {
             return containerView?.window?.windowScene?.statusBarManager?.statusBarFrame ?? .zero
         } else {
             return UIApplication.shared.statusBarFrame
         }
+        #endif
     }
 
     var frameOfPresentedViewInContainerView: CGRect {

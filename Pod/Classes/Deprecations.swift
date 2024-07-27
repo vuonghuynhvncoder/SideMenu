@@ -194,6 +194,7 @@ extension SideMenuManager {
     public typealias MenuPresentMode = SideMenuPresentationStyle
 
     @available(*, deprecated, renamed: "addScreenEdgePanGesturesToPresent")
+    @available(tvOS, unavailable)
     @discardableResult public func menuAddScreenEdgePanGesturesToPresent(toView view: UIView, forMenu sides: [PresentDirection] = [.left, .right]) -> [UIScreenEdgePanGestureRecognizer] {
         return []
     }

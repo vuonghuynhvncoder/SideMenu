@@ -563,7 +563,10 @@ private extension SideMenuNavigationController {
         view.backgroundColor = UIColor.clear
         if let tableViewController = topViewController as? UITableViewController {
             tableViewController.tableView.backgroundView = blurView
+            #if os(tvOS)
+            #else
             tableViewController.tableView.separatorEffect = UIVibrancyEffect(blurEffect: blurEffect)
+            #endif
             tableViewController.tableView.reloadData()
         } else {
             blurView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
@@ -583,7 +586,10 @@ private extension SideMenuNavigationController {
 
         if let tableViewController = topViewController as? UITableViewController {
             tableViewController.tableView.backgroundView = nil
+            #if os(tvOS)
+            #else
             tableViewController.tableView.separatorEffect = nil
+            #endif
             tableViewController.tableView.reloadData()
         } else if let blurView = view.subviews.first as? UIVisualEffectView {
             blurView.removeFromSuperview()
@@ -594,10 +600,16 @@ private extension SideMenuNavigationController {
     func registerForNotifications() {
         NotificationCenter.default.removeObserver(self)
 
-        [UIApplication.willChangeStatusBarFrameNotification,
-         UIApplication.didEnterBackgroundNotification].forEach {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: $0, object: nil)
-        }
+        #if os(tvOS)
+         [UIApplication.didEnterBackgroundNotification].forEach {
+             NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: $0, object: nil)
+         }
+         #else
+         [UIApplication.willChangeStatusBarFrameNotification,
+          UIApplication.didEnterBackgroundNotification].forEach {
+             NotificationCenter.default.addObserver(self, selector: #selector(handleNotification), name: $0, object: nil)
+         }
+         #endif
     }
 
     @available(iOS, deprecated: 13.0)
@@ -605,11 +617,14 @@ private extension SideMenuNavigationController {
         guard isHidden else { return }
 
         switch notification.name {
+        #if os(tvOS)
+        #else
         case UIApplication.willChangeStatusBarFrameNotification:
             // Dismiss for in-call status bar changes but not rotation
             if !rotating {
                 dismissMenu()
             }
+        #endif
         case UIApplication.didEnterBackgroundNotification:
             if dismissWhenBackgrounded {
                 dismissMenu()
